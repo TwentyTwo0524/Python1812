@@ -82,11 +82,13 @@ class IDCard(models.Model):
     # i_person = models.OneToOneField(Person, models.SET_DEFAULT, default=1)
 
 
+
 ## 一对多
 # 一个班级 对应 多个学生
 # 主表
 class Grade(models.Model):
     g_name = models.CharField(max_length=40)
+
 
 # 从表(声明关系)
 '''
@@ -107,3 +109,39 @@ class Student(models.Model):
 
     # 声明关系 (这学生 属于 哪个班)
     s_grade = models.ForeignKey(Grade, models.SET_NULL, null=True)
+
+
+
+## 多对多
+# 用户 和 商品 多对多
+# 一个用户 对应 多个商品(购物车)
+# 一个商品 对应 被多个用户收藏
+# 主表
+class User(models.Model):
+    u_name = models.CharField(max_length=40)
+
+
+# 从表(声明关系)
+class Goods(models.Model):
+    g_name = models.CharField(max_length=40)
+    g_price = models.IntegerField()
+
+    # 多对多关系
+    g_collection = models.ManyToManyField(User)
+
+# 关系表(系统帮我们维护， 后续都是我们自己手动维护)
+'''
+create table app_goods_g_collection
+(
+  id       int auto_increment
+    primary key,
+  goods_id int not null,
+  user_id  int not null,
+  constraint app_goods_g_collection_goods_id_user_id_79e182fc_uniq
+  unique (goods_id, user_id),
+  constraint app_goods_g_collection_goods_id_cc3a7ad8_fk_app_goods_id
+  foreign key (goods_id) references app_goods (id),
+  constraint app_goods_g_collection_user_id_ce13ea95_fk_app_user_id
+  foreign key (user_id) references app_user (id)
+);
+'''

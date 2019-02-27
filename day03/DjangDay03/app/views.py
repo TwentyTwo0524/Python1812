@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
-from app.models import Animal, Person, IDCard, Grade, Student
+from app.models import Animal, Person, IDCard, Grade, Student, User, Goods
 
 
 def index(request):
@@ -167,3 +167,123 @@ def delgrade(request):
     grade.delete()
 
     return HttpResponse('删除班级成功')
+
+
+def delstudent(request):
+    stu = Student.objects.last()
+    stu.delete()
+
+    return HttpResponse('删除学生成功')
+
+
+def showgrade(request):
+    grade = Grade.objects.last()
+
+    # 主表 获取 从表信息 (模型类没有对应的属性，隐式访问，模型类小写)
+    # 模型类小写_set  类似于 objects  [一 对 多]
+    students = grade.student_set.all()
+
+    students_str = '<h3>{}(班级人数:{})</h3>'.format(grade.g_name, students.count())
+    for stu in students:
+        students_str += '<p>{}-姓名:{}，年龄{}</p>'.format(stu.id, stu.s_name, stu.s_age)
+
+    return HttpResponse(students_str)
+
+
+def showstudents(request):
+    students = Student.objects.all()
+
+    students_str = ''
+    for stu in students:
+        # 获取学生 对应 班级
+        # 从表 获取 主表信息 (模型类有对应的属性，显式访问)
+        grade = stu.s_grade
+
+        if grade:
+            students_str += '<p>{}-姓名:{}，年龄{}  【{}】</p>'.format(stu.id, stu.s_name, stu.s_age, grade.g_name)
+        else:
+            students_str += '<p>{}-姓名:{}，年龄{}  【无班级信息】</p>'.format(stu.id, stu.s_name, stu.s_age)
+
+    return HttpResponse(students_str)
+
+
+
+
+
+
+
+##############################################################
+def manytomany(request):
+    return render(request, 'manytomany.html')
+
+
+def adduser(request):
+    user = User()
+    arr = ['张三', '李四', '王五', '赵柳', '田七']
+    temp = random.randrange(0, len(arr))
+    user.u_name = arr[temp] + '-' + str(random.randrange(10, 100))
+    user.save()
+
+    return HttpResponse('添加用户成功')
+
+
+def addgoods(request):
+    goods = Goods()
+    arr = ['iPhone', 'iPad', 'iPod', 'MacBook Pro', 'MacBook Air']
+    temp = random.randrange(0, len(arr))
+    goods.g_name = arr[temp] + '-' + str(random.randrange(0, 10))
+    goods.g_price = random.randrange(10000,100000)
+    goods.save()
+
+    return HttpResponse('添加商品成功')
+
+
+def addcart(request):
+    user = User.objects.last()
+
+    # 将最后一个商品添加 到 该用户购物车中
+    goods = Goods.objects.last()
+
+
+    # 添加到关系表中
+    goods.g_collection.add(user)
+
+    return HttpResponse('【{}】添加 {} 购物车成功'.format(user.u_name, goods.g_name))
+
+
+def showcart(request):
+    # 一个用户 对应 多个商品(购物车)
+    user = User.objects.last()
+
+    # 商品列表
+    goods_list = user.goods_set.all()
+
+    response_str = '<h1> {} 购物车 </h1>'.format(user.u_name)
+    for goods in goods_list:
+        response_str += '<p>商品名:{}, 商品价格:{}</p>'.format(goods.g_name, goods.g_price)
+
+    return HttpResponse(response_str)
+
+
+def addcollect(request):
+    goods = Goods.objects.last()
+    user = User.objects.last()
+
+    # 添加收藏
+    goods.g_collection.add(user)
+
+    return HttpResponse('商品 {} 被【{}】收藏'.format(goods.g_name,user.u_name))
+
+
+def showgoods(request):
+    goods_list = Goods.objects.all()
+
+    response_str = ''
+    for goods in goods_list:
+        # 获取用户
+        # 一个商品 对应 多个用户
+        users = goods.g_collection.all()
+
+        response_str += '<p>【收藏:{}】商品名:{}, 商品价格:{}</p>'.format(users.count(),goods.g_name, goods.g_price)
+
+    return HttpResponse(response_str)

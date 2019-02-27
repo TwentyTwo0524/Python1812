@@ -24,4 +24,16 @@ urlpatterns = [
     url(r'^addgrade/$', views.addgrade),    # 添加班级
     url(r'^addstudent/$', views.addstudent),    # 添加学生
     url(r'^delgrade/$', views.delgrade),    # 删除班级
+    url(r'^delstudent/$', views.delstudent),    # 删除学生
+    url(r'^showgrade/$', views.showgrade),    # 获取班级 对应 学生
+    url(r'^showstudents/$', views.showstudents),     # 获取学生 对应 班级信息
+
+
+    url(r'^manytomany/$', views.manytomany),    # 页面
+    url(r'^adduser/$', views.adduser),  # 添加用户
+    url(r'^addgoods/$', views.addgoods),    # 添加商品
+    url(r'^addcart/$', views.addcart),  # 添加购物车
+    url(r'^showcart/$', views.showcart),    # 显示购物车
+    url(r'^addcollect/$', views.addcollect),    # 添加收藏
+    url(r'^showgoods/$', views.showgoods),  # 显示商品(收藏数量)
 ]
