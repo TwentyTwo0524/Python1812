@@ -18,5 +18,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^app/', include('app.urls'))
+
+    # 命名空间
+    url(r'^jd/', include('app.urls', namespace='jd'))
 ]
