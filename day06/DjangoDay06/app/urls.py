@@ -8,4 +8,7 @@ urlpatterns = [
     url(r'^logout/$', views.logout, name='logout'),
     url(r'^login/$', views.login, name='login'),
     url(r'^errtest/$', views.errtest, name='errtest'),
+    url(r'^lottery/$', views.lottery, name='lottery'),
+
+    url(r'^upfile/$', views.upfile, name='upfile'),
 ]

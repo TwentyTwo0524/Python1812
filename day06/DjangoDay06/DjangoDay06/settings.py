@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'MyMiddleware.app.AppMiddleware.MyMiddle'
 ]
 
 ROOT_URLCONF = 'DjangoDay06.urls'
@@ -134,3 +135,23 @@ SESSION_REDIS_HOST = '127.0.0.1'
 SESSION_REDIS_PORT = 6379
 SESSION_REDIS_DB = 0
 # SESSION_REDIS_PASSWORD = ''
+
+
+
+# 静态文件配置
+# 如何判断静态文件配置好?  直接通过浏览器访问
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+
+
+# 黑名单
+BLOCKED_IPS = [
+    '10.20.152.170',
+    '10.20.152.110',
+    '10.20.152.120',
+]
+
+
+# 上传目录
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')

@@ -1,14 +1,23 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>首页</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
 <body>
 
-{% if username %}
+{% if user %}
+    <div>
+        <a href="{% url 'app:upfile' %}">
+            <img src="/static/media/{{ user.icon }}">
+        </a>
+        用户名: {{ user.username }}
+    </div>
     <p>
-        用户名: {{ username }}
+        <a href="{% url 'app:lottery' %}">抽奖</a>
     </p>
     <p>
         <a href="{% url 'app:logout' %}">
