@@ -109,9 +109,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-Hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -128,3 +128,50 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+
+
+## 缓存配置
+# CACHES = {
+#   'default': {
+#       'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#       # 如果你只有一个本地内存缓存，你可以忽略这个设置；
+#       # 如果你有多个的时候，你需要至少给他们中一个赋予名字以区分他们;
+#       'LOCATION': 'unique-snowflake',
+#       'TIMEOUT': 30
+#   }
+# }
+
+
+# CACHES = {
+#   'default': {
+#       'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+#       # 使用缓存数据对应的表单
+#       'LOCATION': 'cache_my_table',
+#       'KEY_PREFIX': 'DjangoCache'
+#   }
+# }
+
+
+# CACHES = {
+#   'default': {
+#       'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#       # 缓存所在的位置
+#       # 必须保证对你列出的路径具有读写权限
+#       'LOCATION': '/home/atom/Desktop/python1812/day07/DjangoDay07/cache',
+#   }
+# }
+
+
+# 安装 pip install django-redis
+# 前提: reids服务启动
+# 配置
+CACHES = {
+  'default': {
+      'BACKEND': 'django_redis.cache.RedisCache',
+      # reids地址
+      'LOCATION': 'redis://127.0.0.1:6379/0',
+      'OPTIONS':{
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+      }
+  }
+}
