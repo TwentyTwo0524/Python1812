@@ -1,4 +1,7 @@
 $(function () {
+    // 恢复盒子大小
+    $('.home').width(innerWidth)
+
     var topSwiper = new Swiper('#topSwiper', {
         pagination: '.swiper-pagination',
         // nextButton: '.swiper-button-next',

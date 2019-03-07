@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from app.models import Wheel, Nav, Mustbuy, Shop
+from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow
 
 
 # Create your views here.
@@ -20,6 +20,9 @@ def home(request):
     shopclass_list = shops[3:7]
     shopcommends = shops[7:11]
 
+    # 商品列表
+    mainshows = Mainshow.objects.all()
+
     response_dir = {
         'wheels':wheels,
         'navs': navs,
@@ -27,7 +30,8 @@ def home(request):
         'shophead': shophead,
         'shoptabs': shoptabs,
         'shopclass_list': shopclass_list,
-        'shopcommends': shopcommends
+        'shopcommends': shopcommends,
+        'mainshows': mainshows
     }
 
     return render(request, 'home/home.html', context=response_dir)
