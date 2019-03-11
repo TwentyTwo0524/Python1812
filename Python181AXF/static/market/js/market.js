@@ -102,4 +102,35 @@ $(function () {
         categoryViewHide()
         categoryShow = false
     })
+
+
+
+
+    ///////////////////////////////////////
+    // 隐藏处理
+    $('.bt-wrapper>.glyphicon-minus').hide()
+    $('.bt-wrapper>i').hide()
+
+    // 点击操作
+    $('.bt-wrapper>.glyphicon-plus').click(function () {
+        // 需要传递 user、goods
+        // user 因为状态保持，所以可以不用传递 [前提必须是先登录]
+
+        // 哪件商品?  >>>  每个按钮身上有对应的属性
+        request_data = {
+            'goodsid': $(this).attr('data-goodsid')
+        }
+
+        $.get('/axf/addcart/', request_data, function (response) {
+            console.log(response)
+
+            if (response.status == -1){ // 未登录
+
+                // 设置cookie
+                $.cookie('back', 'market', {expires: 3, path: '/'})
+
+                window.open('/axf/login/', '_self')
+            }
+        })
+    })
 })

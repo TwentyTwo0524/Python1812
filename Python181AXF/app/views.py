@@ -3,9 +3,10 @@ import random
 import time
 
 from django.core.cache import cache
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 
-from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow, Foodtype, Goods, User
+from app.models import Wheel, Nav, Mustbuy, Shop, Mainshow, Foodtype, Goods, User, Cart
 
 
 # Create your views here.
@@ -129,6 +130,9 @@ def login(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
+        # 重定向位置
+        back = request.COOKIES.get('back')
+
         users = User.objects.filter(email=email)
         if users.exists():  # 存在
             user = users.first()
@@ -142,7 +146,11 @@ def login(request):
                 # 传递客户端
                 request.session['token'] = token
 
-                return redirect('axf:mine')
+                # 根据back
+                if back == 'mine':
+                    return redirect('axf:mine')
+                else:
+                    return redirect('axf:marketbase')
             else:   # 密码错误
                 return render(request, 'mine/login.html', context={'ps_err': '密码错误'})
         else:   # 不存在
@@ -192,3 +200,67 @@ def register(request):
 
         return redirect('axf:mine')
 
+
+def checkemail(request):
+    email = request.GET.get('email')
+
+    # 去数据库中查找
+    users = User.objects.filter(email=email)
+    if users.exists():  # 账号被占用
+        response_data = {
+            'status': 0,  # 1可用， 0不可用
+            'msg': '账号被占用!'
+        }
+    else:   # 账号可用
+        response_data = {
+            'status':1,  # 1可用， 0不可用
+            'msg': '账号可用!'
+        }
+
+    # 返回JSON数据
+    return JsonResponse(response_data)
+
+
+def addcart(request):
+    # 获取token
+    token = request.session.get('token')
+
+    # 响应数据
+    response_data = {}
+
+    # 缓存
+    if token:
+        userid = cache.get(token)
+
+        if userid:  # 已经登录
+            user = User.objects.get(pk=userid)
+            goodsid = request.GET.get('goodsid')
+            goods = Goods.objects.get(pk=goodsid)
+
+            # 商品不存在: 添加新记录
+            # 商品存在: 修改number
+            carts = Cart.objects.filter(user=user).filter(goods=goods)
+            if carts.exists():
+                cart = carts.first()
+                cart.number = cart.number + 1
+                cart.save()
+            else:
+                cart = Cart()
+                cart.user = user
+                cart.goods = goods
+                cart.number = 1
+                cart.save()
+
+            response_data['status'] = 1
+            response_data['msg'] = '添加 {} 购物车成功: {}'.format(cart.goods.productlongname, cart.number)
+
+            return JsonResponse(response_data)
+
+    # 未登录
+    # 因为是ajax操作，所以重定向是不可以的!
+    # return redirect('axf:login')
+
+    response_data['status'] = -1
+    response_data['msg'] = '请登录后操作'
+
+    return JsonResponse(response_data)

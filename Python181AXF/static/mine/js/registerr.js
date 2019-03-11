@@ -16,13 +16,34 @@ $(function () {
             // 只需要 服务器 提示 可用true/不可用false
             // 通过ajax和服务器通信
 
+            // jQuery.get( url [, data ] [, success(data, textStatus, jqXHR) ] [, dataType ] )
+            // jQuery.post( url [, data ] [, success(data, textStatus, jqXHR) ] [, dataType ] )
+            // jQuery.getJSON( url [, data ] [, success(data, textStatus, jqXHR) ] )
 
-            $('#email-t').popover('hide')
+            request_data = {
+                'email': $(this).val()
+            }
 
-            $('#email').removeClass('has-error').addClass('has-success')
-            $('#email>span').removeClass('glyphicon-remove').addClass('glyphicon-ok')
+            $.get('/axf/checkemail/', request_data, function (response) {   // 回调函数
+                // 客户端接受到数据之后的处理
+                console.log(response)
+                if (response.status){   // 1可用
+                    $('#email-t').attr('data-content', '恭喜你账号是可用').popover('hide')
+
+                    $('#email').removeClass('has-error').addClass('has-success')
+                    $('#email>span').removeClass('glyphicon-remove').addClass('glyphicon-ok')
+                } else {    // 0不可用
+                    $('#email-t').attr('data-content', response.msg).popover('show')
+
+                    $('#email').removeClass('has-success').addClass('has-error')
+                    $('#email>span').removeClass('glyphicon-ok').addClass('glyphicon-remove')
+                }
+            })
+
+
+
         } else {    // 不符合
-            $('#email-t').popover('show')
+            $('#email-t').attr('data-content', '数据格式不正确').popover('show')
 
             $('#email').removeClass('has-success').addClass('has-error')
             $('#email>span').removeClass('glyphicon-ok').addClass('glyphicon-remove')
