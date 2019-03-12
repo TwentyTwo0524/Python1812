@@ -100,16 +100,40 @@ def market(request, childid='0', sortid='0'):
         'foodtypes': foodtypes,
         'goods_list': goods_list,
         'childtype_list': childtype_list,
-        'childid': childid
+        'childid': childid,
     }
+
+
+    # 获取购物车信息
+    token = request.session.get('token')
+    userid = cache.get(token)
+
+
+    if userid:
+        user = User.objects.get(pk=userid)
+        carts = user.cart_set.all()
+        response_dir['carts'] = carts
 
 
     return render(request, 'market/market.html', context=response_dir)
 
 
 def cart(request):
-    temp = random.randrange(4,63)
-    return render(request, 'cart/cart.html', context={'temp':temp})
+    token = request.session.get('token')
+    userid = cache.get(token)
+    if userid:  # 有登录才显示
+        user = User.objects.get(pk=userid)
+        carts = user.cart_set.filter(number__gt=0)
+
+        isall = True
+        for cart in carts:
+            if not cart.isselect:
+                isall = False
+
+        return render(request, 'cart/cart.html', context={'carts': carts, 'isall':isall})
+    else:   # 未登录不显示
+        return render(request, 'cart/no-login.html')
+
 
 
 def mine(request):
@@ -252,6 +276,7 @@ def addcart(request):
                 cart.save()
 
             response_data['status'] = 1
+            response_data['number'] = cart.number
             response_data['msg'] = '添加 {} 购物车成功: {}'.format(cart.goods.productlongname, cart.number)
 
             return JsonResponse(response_data)
@@ -262,5 +287,45 @@ def addcart(request):
 
     response_data['status'] = -1
     response_data['msg'] = '请登录后操作'
+
+    return JsonResponse(response_data)
+
+
+def subcart(request):
+    # 商品
+    goodsid = request.GET.get('goodsid')
+    goods = Goods.objects.get(pk=goodsid)
+
+    # 用户
+    token = request.session.get('token')
+    userid = cache.get(token)
+    user = User.objects.get(pk=userid)
+
+    # 获取对应的购物车信息
+    cart = Cart.objects.filter(user=user).filter(goods=goods).first()
+    cart.number = cart.number -1
+    cart.save()
+
+    response_data = {
+        'msg': '删减商品成功',
+        'status': 1,
+        'number': cart.number
+    }
+
+    return JsonResponse(response_data)
+
+
+def changecartselect(request):
+    cartid = request.GET.get('cartid')
+
+    cart = Cart.objects.get(pk=cartid)
+    cart.isselect = not cart.isselect
+    cart.save()
+
+    response_data = {
+        'msg': '状态修改成功',
+        'status': 1,
+        'isselect': cart.isselect
+    }
 
     return JsonResponse(response_data)

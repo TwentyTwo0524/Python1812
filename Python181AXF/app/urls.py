@@ -20,4 +20,6 @@ urlpatterns = [
 
 
     url(r'^addcart/$', views.addcart, name='addcart'),  # 添加到购物车
+    url(r'^subcart/$', views.subcart, name='subcart'),  # 删减购物车
+    url(r'^changecartselect/$', views.changecartselect, name='changecartselect'),   # 购物车商品选中状态
 ]
