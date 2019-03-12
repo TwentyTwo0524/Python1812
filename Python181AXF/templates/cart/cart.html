@@ -31,8 +31,8 @@
                         </div>
                         <div class="detail">
                             <p class="name">{{ cart.goods.productlongname }}</p>
-                            <p class="price">{{ cart.goods.price }}</p>
-                            <p class="num">X{{ cart.number }}</p>
+                            <p class="price" data-price="{{ cart.goods.price }}">{{ cart.goods.price }}</p>
+                            <p class="num" data-number="{{ cart.number }}">X{{ cart.number }}</p>
                         </div>
                     </div>
                 </li>
@@ -55,8 +55,10 @@
                 </div>
             </div>
 
-            <div class="bill-right">
-                下单
+            <div class="bill-right" id="order">
+                <a href="{% url 'axf:generateorder' %}">
+                    下单
+                </a>
             </div>
         </div>
     </div>
